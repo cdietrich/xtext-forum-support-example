@@ -1,0 +1,4 @@
+include 'org.xtext.example.mydsl2'
+include 'org.xtext.example.mydsl2.ide'
+include 'org.xtext.example.mydsl2.web'
+include 'org.xtext.example.mydsl2.tests'
