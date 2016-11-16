@@ -21,7 +21,7 @@
 		});
 		require(["webjars/ace/1.2.2/src/ace"], function() {
 			require(["xtext/xtext-ace"], function(xtext) {
-				xtext.createEditor({
+				var editor = xtext.createEditor({
 					baseUrl: baseUrl,
 					syntaxDefinition: "xtext-resources/generated/mode-mydsl2"
 				});
@@ -34,6 +34,17 @@
 					
 					jQuery('#generator-result').html('<iframe src="http://' + location.host + '/xtext-service/generate-all?resource=example1.mydsl2"></iframe>');
 					e.preventDefault();
+				});
+				jQuery('#generate-all-post-button').bind("click", function(e){
+					var fullText = editor.xtextServices.editorContext.getText();
+					console.log(fullText);
+					var data = {
+						resource : "example.mydsl2",
+						fullText : fullText
+					};	
+					jQuery.post('http://localhost:8080/xtext-service/generate', data, function(result){
+						jQuery("#generator-result").text(result);
+					});    e.preventDefault();
 				});
 			});
 		});
@@ -51,6 +62,7 @@
 	<div class="button-wrapper">
 		<button id="generate-button" value="Generate" title="Generate">Generate</button>
 		<button id="generate-all-button" value="Generate All" title="Generate All">Generate All</button>
+		<button id="generate-all-post-button" value="Generate All (Post)" title="Generate All (Post)">Generate All (Post)</button>
 		<div id="generator-result">
 			Result
 		</div>
