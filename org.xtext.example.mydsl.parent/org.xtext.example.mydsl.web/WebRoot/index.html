@@ -1,0 +1,72 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Content-Language" content="en-us">
+	<title>Example Web Editor</title>
+	<link rel="stylesheet" type="text/css" href="orion/code_edit/built-codeEdit.css"/>
+	<link rel="stylesheet" type="text/css" href="xtext/2.10.0/xtext-orion.css"/>
+	<link rel="stylesheet" type="text/css" href="style.css"/>
+	<script src="webjars/requirejs/2.2.0/require.min.js"></script>
+	<script type="text/javascript">
+		var baseUrl = window.location.pathname;
+		var fileIndex = baseUrl.indexOf("index.html");
+		if (fileIndex > 0)
+			baseUrl = baseUrl.slice(0, fileIndex);
+		require.config({
+			baseUrl: baseUrl,
+			paths: {
+				"text": "webjars/requirejs-text/2.0.15/text",
+				"jquery": "webjars/jquery/2.2.3/jquery.min",
+				"xtext/xtext-orion": "xtext/2.10.0/xtext-orion"
+			}
+		});
+		require(["orion/code_edit/built-codeEdit-amd"], function() {
+			require(["xtext/xtext-orion"], function(xtext) {
+				var editor = xtext.createEditor({
+					baseUrl: baseUrl,
+					syntaxDefinition: "xtext-resources/generated/mydsl-syntax"
+				}).done(function(editorViewer) {
+					jQuery('#generate-button').bind("click", function(e){
+				   var resource = editorViewer.xtextServices.options.resourceId;
+					var contentType=editorViewer.xtextServices.contentType;
+					
+					var fullText = editorViewer.xtextServices.editorContext.getText();
+					console.log(fullText);
+					var data = {
+						resource : resource,
+						fullText : fullText,
+						contextType : contentType
+					};	
+					jQuery.post('http://localhost:8080/xtext-service/generate-all', data, function(result){
+						jQuery("#generator-result").text(JSON.stringify(result));
+					}); 
+				});
+				});
+				
+				
+				
+				
+				
+			});
+		});
+	</script>
+</head>
+<body>
+
+<div class="container">
+	<div class="header">
+		<h1>Example MyDsl Web Editor</h1>
+	</div>
+	<div class="content">
+		<div id="xtext-editor" data-editor-xtext-lang="mydsl"></div>
+	</div>
+	<div class="button-wrapper">
+			<button id="generate-button" value="Generate" title="Generate">Generate</button>
+			<div id="generator-result">
+				Result
+			</div>
+		</div>
+</div>
+
+</body>
+</html>
