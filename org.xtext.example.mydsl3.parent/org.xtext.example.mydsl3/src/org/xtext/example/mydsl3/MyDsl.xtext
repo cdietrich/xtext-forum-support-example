@@ -1,0 +1,68 @@
+grammar org.xtext.example.mydsl3.MyDsl with org.eclipse.xtext.common.Terminals
+
+generate myDsl "http://www.xtext.org/example/mydsl3/MyDsl"
+
+Domainmodel:
+    (elements+=AbstractElement)*;
+
+PackageDeclaration:
+    'package' name=QualifiedName '{'
+        (elements+=AbstractElement)*
+    '}';
+
+AbstractElement:
+    PackageDeclaration | Type | Import;
+
+QualifiedName:
+    ID ('-' ID)*;
+
+QualifiedDate:
+    INT('-' INT)*
+;
+
+Import:
+    'import' importedNamespace=QualifiedNameWithWildcard;
+
+QualifiedNameWithWildcard:
+    QualifiedName '.*'?;
+
+Type:
+     (data+= DataType)* man+=Entity  ;
+
+
+DataType:
+    'tag' name=Tag;
+
+Tag:
+    Hobbies='hobbies' | Work= 'work' |Fun='fun'
+;
+
+Entity:
+    name=Category '{'
+       feature+=Feature*
+    '}'
+    ;
+Feature:
+    component+=Man(',' component+=Opt)*
+;    
+enum Category:
+    Blog='blog' | Article='articles'
+;
+
+Man:
+    name='title' '=' type=QualifiedName
+ ;
+
+ Opt:
+    Tags|Date
+ ;
+
+ Tags:
+    name='tags' '=' '['type= Tag(','tag+=Tag)*']' 
+    |
+    name='tags' '=' '[' ']' 
+    ;
+
+Date:
+    name='date' '=' type=QualifiedDate
+    ;
